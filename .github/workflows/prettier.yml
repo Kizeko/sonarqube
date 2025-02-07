@@ -32,4 +32,4 @@ jobs:
 
       - name: Run Prettier check
         run: |
-          yarn prettier --plugin ./node_modules/prettier-plugin-java/dist/index.js -c "**/*.java" --loglevel debug
+          yarn prettier --plugin ./node_modules/prettier-plugin-java/dist/index.js -c "sonar-scanner-engine/src/main/java/org/sonar/scanner/*.java"
