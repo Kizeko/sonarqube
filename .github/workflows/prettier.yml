@@ -1,35 +1,38 @@
-name: Java + Prettier Check
+name: SonarQube Load Test
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    branches:
+      - main
 
 jobs:
-  lint-java-with-prettier:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Set up JDK
-        uses: actions/setup-java@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
         with:
-          distribution: temurin
-          java-version: 17
+          java-version: 11
+          distribution: 'adopt'
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Build SonarQube with Gradle
+        run: |
+          ./gradlew clean build
+
+      - name: Run SonarQube locally
+        run: |
+          ./gradlew sonarqube
+
+      - name: Run JMeter Load Test
+        run: |
+          jmeter -n -t test/sonarqube-load-test.jmx -l result.jtl -e -o result-folder
+
+      - name: Upload JMeter Results
+        uses: actions/upload-artifact@v2
         with:
-          node-version: 16
-
-      - name: Install dependencies (Prettier + Java plugin)
-        run: |
-          yarn init -y
-          yarn add --dev prettier prettier-plugin-java
-
-      - name: Run Prettier check
-        run: |
-          yarn prettier --plugin ./node_modules/prettier-plugin-java/dist/index.js -c "sonar-scanner-engine/src/main/java/org/sonar/scanner/*.java"
+          name: jmeter-results
+          path: result-folder
