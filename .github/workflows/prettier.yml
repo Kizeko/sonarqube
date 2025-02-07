@@ -3,7 +3,7 @@ name: SonarQube Load Test
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build-and-test:
