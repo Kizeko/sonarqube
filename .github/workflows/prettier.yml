@@ -20,15 +20,16 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Set up Node (pour installer Prettier)
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 16
 
-      - name: Install Prettier + plugin Java
-        run: npm install --save-dev prettier prettier-plugin-java
+      - name: Install dependencies (Prettier + Java plugin)
+        run: |
+          yarn init -y
+          yarn add --dev prettier prettier-plugin-java
 
       - name: Run Prettier check
-        # --check retourne un code d'erreur si le format n'est pas bon.
-        # Pour corriger automatiquement, vous pouvez faire "--write" (en local).
-        run: npx prettier --check "**/*.java"
+        run: |
+          yarn prettier --plugin ./node_modules/prettier-plugin-java/dist/index.js -c "src/**/*.java"
